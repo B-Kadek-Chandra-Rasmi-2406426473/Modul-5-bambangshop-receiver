@@ -68,16 +68,16 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [x] Commit: `Implement list_all_as_string function in Notification repository.`
     -   [x] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
 -   **STAGE 3: Implement services and controllers**
-    -   [ ] Commit: `Create Notification service struct skeleton.`
-    -   [ ] Commit: `Implement subscribe function in Notification service.`
-    -   [ ] Commit: `Implement subscribe function in Notification controller.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification service.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification controller.`
-    -   [ ] Commit: `Implement receive_notification function in Notification service.`
-    -   [ ] Commit: `Implement receive function in Notification controller.`
-    -   [ ] Commit: `Implement list_messages function in Notification service.`
-    -   [ ] Commit: `Implement list function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
+    -   [x] Commit: `Create Notification service struct skeleton.`
+    -   [x] Commit: `Implement subscribe function in Notification service.`
+    -   [x] Commit: `Implement subscribe function in Notification controller.`
+    -   [x] Commit: `Implement unsubscribe function in Notification service.`
+    -   [x] Commit: `Implement unsubscribe function in Notification controller.`
+    -   [x] Commit: `Implement receive_notification function in Notification service.`
+    -   [x] Commit: `Implement receive function in Notification controller.`
+    -   [x] Commit: `Implement list_messages function in Notification service.`
+    -   [x] Commit: `Implement list function in Notification controller.`
+    -   [x] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
 
 ## Your Reflections
 This is the place for you to write reflections:
@@ -94,3 +94,13 @@ Jika kita menggunakan Mutex<>, aplikasi akan mengunci seluruh akses setiap kali 
 Di Java, variabel static bisa dimutasi secara bebas, namun hal ini sangat rentan menyebabkan Data Races jika diakses oleh banyak thread secara bersamaan. Rust didesain dengan keamanan memori di tingkat compiler. Compiler Rust melarang pembuatan variabel global (static) yang bisa diubah-ubah tanpa perlindungan sinkronisasi. Library lazy_static digunakan karena Rust membutuhkan waktu saat runtime untuk menginisialisasi object kompleks dan thread-safe seperti RwLock<Vec<Notification>>.
 
 #### Reflection Subscriber-2
+1. Have you explored things outside of the steps in the tutorial, for example: src/lib.rs?
+Ya, saya jadi mengeksplorasi src/lib.rs. Dari file tersebut, saya mempelajari bagaimana lazy_static digunakan untuk membuat variabel global seperti REQWEST_CLIENT dan APP_CONFIG yang penting untuk mengelola resource yang digunakan bersama di seluruh aplikasi. Struct AppConfig menunjukkan bagaimana environment variable (dotenv) dan konfigurasi default digabungkan menggunakan Rocket's Figment untuk menyediakan konfigurasi yang fleksibel dan terpusat. Selain itu, fungsi compose_error_response menunjukkan cara menstandarisasi penanganan error dengan respons JSON, sehingga API menjadi lebih konsisten dan mudah digunakan.
+
+2. How Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?
+Observer Pattern memudahkan penambahan subscriber karena publisher dan subscriber bersifat loosely coupled. Setiap instance Receiver cukup melakukan subscribe secara independen ke Main app, dan Main app akan mengirimkan notifikasi ke semua subscriber yang terdaftar tanpa perlu mengetahui detail internal mereka (cukup mengetahui URL subscriber). Sehingga, menambahkan instance Receiver baru sama sekali tidak memerlukan perubahan pada kode Main app.
+
+Namun, menjalankan lebih dari satu instance Main app akan mempersulit sistem. Karena SUBSCRIBERS disimpan secara in-memory sebagai variabel static, setiap instance Main app akan memiliki daftar subscriber-nya sendiri yang terpisah. Subscriber yang terdaftar di satu instance tidak akan dikenali oleh instance lainnya, sehingga notifikasi bisa saja terlewat. Untuk mendukung beberapa instance Main app dengan benar, diperlukan penyimpanan seperti database atau distributed cache untuk menyinkronkan state subscriber di semua instance.
+
+3. Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).
+Untuk tutorial ini, saya tidak membuat test tambahan ataupun menambahkan dokumentasi Postman collection. Namun, untuk Group Project, saya sudah mulai mencoba membuat dan mendokumentasikan pada Postman collection. Hal ini sangat membantu karena setiap endpoint API menjadi terdokumentasi dengan baik, sehingga anggota tim lain dapat dengan mudah  menggunakan API. Selain itu, dengan adanya dokumentasi yang lengkap, proses pengujian menjadi lebih efisien dan menghemat waktu karena tidak perlu mengulang konfigurasi request dari awal setiap kali ingin melakukan testing.
