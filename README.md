@@ -61,12 +61,12 @@ You can install Postman via this website: https://www.postman.com/downloads/
 ## Mandatory Checklists (Subscriber)
 -   [ ] Clone https://gitlab.com/ichlaffterlalu/bambangshop-receiver to a new repository.
 -   **STAGE 1: Implement models and repositories**
-    -   [ ] Commit: `Create Notification model struct.`
-    -   [ ] Commit: `Create SubscriberRequest model struct.`
-    -   [ ] Commit: `Create Notification database and Notification repository struct skeleton.`
-    -   [ ] Commit: `Implement add function in Notification repository.`
-    -   [ ] Commit: `Implement list_all_as_string function in Notification repository.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
+    -   [x] Commit: `Create Notification model struct.`
+    -   [x] Commit: `Create SubscriberRequest model struct.`
+    -   [x] Commit: `Create Notification database and Notification repository struct skeleton.`
+    -   [x] Commit: `Implement add function in Notification repository.`
+    -   [x] Commit: `Implement list_all_as_string function in Notification repository.`
+    -   [x] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
 -   **STAGE 3: Implement services and controllers**
     -   [ ] Commit: `Create Notification service struct skeleton.`
     -   [ ] Commit: `Implement subscribe function in Notification service.`
@@ -85,5 +85,12 @@ This is the place for you to write reflections:
 ### Mandatory (Subscriber) Reflections
 
 #### Reflection Subscriber-1
+1. Explain why it is necessary for this case, and explain why we do not use Mutex<> instead?
+Kita menggunakan RwLock<> (Read-Write Lock) karena lebih efisien untuk kasus NOTIFICATIONS yang memiliki karakteristik operasi: sering dibaca, namun jarang ditulis. RwLock<> mengizinkan banyak thread untuk membaca data secara bersamaan (fungsi list_all_as_string), tetapi akan mengunci akses hanya jika ada thread yang sedang menulis data (fungsi add). Hal ini membuat performa aplikasi lebih efisien karena proses membaca tidak saling memblokir.
+
+Jika kita Mutex<>, aplikasi akan mengunci seluruh akses setiap kali ada thread yang berinteraksi dengan data, terlepas apakah itu hanya untuk membaca atau menulis. Ini akan menciptakan bottleneck dan menurunkan performa secara drastis jika ada banyak request yang hanya ingin melihat daftar notifikasi.
+
+2. Compared to Java where we can mutate the content of a static variable via a static function, why did not Rust allow us to do so?
+Di Java, variabel static bisa dimutasi secara bebas, namun hal ini sangat rentan menyebabkan Data Races jika diakses oleh banyak thread secara bersamaan. Rust didesain dengan keamanan memori di tingkat compiler. Compiler Rust melarang pembuatan variabel global (static) yang bisa diubah-ubah tanpa perlindungan sinkronisasi. Library lazy_static digunakan karena Rust membutuhkan waktu saat runtime untuk menginisialisasi object kompleks dan thread-safe seperti RwLock<Vec<Notification>>.
 
 #### Reflection Subscriber-2
